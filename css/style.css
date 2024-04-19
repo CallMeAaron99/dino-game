@@ -13,19 +13,19 @@ body {
     min-height: 100vh;
 }
 
-.world {
+#world {
     overflow: hidden;
     position: relative;
 }
 
-.score {
+#score {
     position: absolute;
     font-size: 3vmin;
     right: 1vmin;
     top: 1vmin;
 }
 
-.start-screen {
+#start-screen {
     position: absolute;
     font-size: 5vmin;
     top: 50%;
@@ -45,7 +45,7 @@ body {
     left: calc(var(--left) * 1%);
 }
 
-.dino {
+#dino {
     --bottom: 0;
     position: absolute;
     left: 1%;

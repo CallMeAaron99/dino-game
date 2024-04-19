@@ -1,14 +1,22 @@
-import { getCactusRects, setupCactus, updateCactus } from './cactus.js'
-import { getDinoRect, setDinoLose, setupDino, updateDino } from './dino.js'
-import { setupGround, updateGround } from './ground.js'
+import Cactus from './cactus.js'
+import Dino from './dino.js'
+import Ground from './ground.js'
 
 const WORLD_WIDTH = 100
 const WORLD_HEIGHT = 30
 const SPEED_SCALE_INCREASE = 0.00001
+const DINO_JUMP_SPEED = 0.45
+const DINO_GRAVITY = 0.0015
+const SPEED = 0.05
+const CACTUS_INTERVAL_MIN = 500
+const CACTUS_INTERVAL_MAX = 2000
+const worldElem = document.getElementById("world")
+const scoreElem = document.getElementById("score")
+const startScreenElem = document.getElementById("start-screen")
 
-const worldElem = document.querySelector("[data-world]")
-const scoreElem = document.querySelector("[data-score]")
-const startScreenElem = document.querySelector("[data-start-screen]")
+const dino = new Dino(DINO_JUMP_SPEED, DINO_GRAVITY)
+const cactus = new Cactus(SPEED, CACTUS_INTERVAL_MIN, CACTUS_INTERVAL_MAX, worldElem)
+const ground = new Ground(SPEED)
 
 let lastTime = null
 let speedScale = 1
@@ -19,18 +27,18 @@ window.addEventListener("resize", setPixelToWorldScale)
 document.addEventListener("keydown", handelStart, { once: true })
 
 function update(time) {
-    if (lastTime === null) {
+    if (lastTime == null) {
         lastTime = time
         window.requestAnimationFrame(update)
         return
     }
     const delta = time - lastTime
 
-    updateGround(delta, speedScale)
     updateSpeedScale(delta)
     updateScore(delta)
-    updateDino(delta, speedScale)
-    updateCactus(delta, speedScale)
+    ground.update(delta, speedScale)
+    dino.update(delta, speedScale)
+    cactus.update(delta, speedScale)
 
     if (checkLost()) return handelLose()
 
@@ -39,7 +47,7 @@ function update(time) {
 }
 
 function handelLose() {
-    setDinoLose()
+    dino.setLose()
     setTimeout(() => {
         document.addEventListener("keydown", handelStart, { once: true })
         startScreenElem.classList.remove("hide")
@@ -47,8 +55,8 @@ function handelLose() {
 }
 
 function checkLost() {
-    const dinoRect = getDinoRect()
-    return getCactusRects().some(rect => isCollision(rect, dinoRect))
+    const dinoRect = dino.getRect()
+    return cactus.rects().some(rect => isCollision(rect, dinoRect))
 }
 
 function isCollision(rect1, rect2) {
@@ -72,9 +80,9 @@ function updateSpeedScale(delta) {
 function handelStart() {
     lastTime = null
     score = 0
-    setupGround()
-    setupDino()
-    setupCactus()
+    ground.reset()
+    dino.reset()
+    cactus.reset()
     startScreenElem.classList.add("hide")
     window.requestAnimationFrame(update)
 }

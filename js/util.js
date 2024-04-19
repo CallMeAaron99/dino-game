@@ -9,3 +9,7 @@ export function setCustomProperty(elem, prop, value) {
 export function incrementCustomProperty(elem, prop, inc) {
     setCustomProperty(elem, prop, getCustomProperty(elem, prop) + inc)
 }
+
+export function randomNumberBetween(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min)
+}

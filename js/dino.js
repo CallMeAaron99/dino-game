@@ -1,71 +1,75 @@
-import { getCustomProperty, incrementCustomProperty, setCustomProperty } from "./updateCustomProperty.js"
+import { getCustomProperty, incrementCustomProperty, setCustomProperty } from "./util.js"
 
-const dinoElem = document.querySelector("[data-dino]")
-const JUMP_SPEED = 0.45
-const GRAVITY = 0.0015
-const DINO_FRAME_COUNT = 2
-const FRAME_TIME = 100
-
-let isJumping
-let dinoFrame
-let currentFrameTime
-let yVelocity
-
-export function setupDino() {
-    isJumping = false
-    dinoFrame = 0
-    currentFrameTime = 0
-    yVelocity = 0
-    setCustomProperty(dinoElem, "--bottom", 0)
-    document.removeEventListener("keydown", onJump)
-    document.addEventListener("keydown", onJump)
-}
-
-export function updateDino(delta, speedScale) {
-    handelRun(delta, speedScale)
-    handelJump(delta)
-}
-
-export function getDinoRect() {
-    return dinoElem.getBoundingClientRect()
-}
-
-export function setDinoLose() {
-    dinoElem.src = "images/dino-lose.png"
-}
-
-function handelRun(delta, speedScale) {
-    if (isJumping) {
-        dinoElem.src = "images/dino-stationary.png"
-        return
+export default class Dino {
+    constructor(jumpSpeed, gravity) {
+        this.dinoElem = document.getElementById("dino")
+        this.jumpSpeed = jumpSpeed
+        this.gravity = gravity
+        this.dino_frame_count = 2
+        this.frame_time = 100
+        this.isJumping = false
+        this.yVelocity = 0
+        this.dinoFrame = 0
+        this.currentFrameTime = 0
+        this.onJump = this.onJump.bind(this)
     }
 
-    if (currentFrameTime >= FRAME_TIME) {
-        dinoFrame = (dinoFrame + 1) % DINO_FRAME_COUNT
-        dinoElem.src = `images/dino-run-${dinoFrame}.png`
-        currentFrameTime -= FRAME_TIME
+    reset() {
+        this.isJumping = false
+        this.yVelocity = 0
+        this.dinoFrame = 0
+        this.currentFrameTime = 0
+        setCustomProperty(this.dinoElem, "--bottom", 0)
+        document.removeEventListener("keydown", this.onJump)
+        document.addEventListener("keydown", this.onJump)
     }
-    currentFrameTime += delta * speedScale
-}
 
-function handelJump(delta) {
-    if (!isJumping) return
+    update(delta, speedScale) {
+        this.#handelRun(delta, speedScale)
+        this.#handelJump(delta)
+    }
 
-    incrementCustomProperty(dinoElem, "--bottom", yVelocity * delta)
+    getRect() {
+        return this.dinoElem.getBoundingClientRect()
+    }
     
-    // Touch ground
-    if (getCustomProperty(dinoElem, "--bottom") <= 0) {
-        setCustomProperty(dinoElem, "--bottom", 0)
-        isJumping = false
-        return
+    setLose() {
+        this.dinoElem.src = "images/dino-lose.png"
     }
 
-    yVelocity -= GRAVITY * delta
-}
+    #handelRun(delta, speedScale) {
+        if (this.isJumping) {
+            this.dinoElem.src = "images/dino-stationary.png"
+            return
+        }
 
-function onJump (e) {
-    if (e.code !== "Space" || isJumping) return
+        if (this.currentFrameTime >= this.frame_time) {
+            this.dinoFrame = (this.dinoFrame + 1) % this.dino_frame_count
+            this.dinoElem.src = `images/dino-run-${this.dinoFrame}.png`
+            this.currentFrameTime -= this.frame_time
+        }
+        this.currentFrameTime += speedScale * delta
+    }
 
-    yVelocity = JUMP_SPEED
-    isJumping = true
+    #handelJump(delta) {
+        if (!this.isJumping) return
+
+        incrementCustomProperty(this.dinoElem, "--bottom", this.yVelocity * delta)
+
+        // Touch ground
+        if (getCustomProperty(this.dinoElem, "--bottom") <= 0) {
+            setCustomProperty(this.dinoElem, "--bottom", 0)
+            this.isJumping = false
+            return
+        }
+
+        this.yVelocity -= this.gravity * delta
+    }
+
+    onJump(e) {
+        if (e.code !== "Space" || this.isJumping) return
+        
+        this.yVelocity = this.jumpSpeed
+        this.isJumping = true
+    }
 }
