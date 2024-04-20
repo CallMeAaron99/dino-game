@@ -11,7 +11,6 @@ export default class Dino {
         this.yVelocity = 0
         this.dinoFrame = 0
         this.currentFrameTime = 0
-        this.onJump = this.onJump.bind(this)
     }
 
     reset() {
@@ -20,8 +19,8 @@ export default class Dino {
         this.dinoFrame = 0
         this.currentFrameTime = 0
         setCustomProperty(this.dinoElem, "--bottom", 0)
-        document.removeEventListener("keydown", this.onJump)
-        document.addEventListener("keydown", this.onJump)
+        document.removeEventListener("keydown", this.#onJump)
+        document.addEventListener("keydown", this.#onJump)
     }
 
     update(delta, speedScale) {
@@ -32,7 +31,7 @@ export default class Dino {
     getRect() {
         return this.dinoElem.getBoundingClientRect()
     }
-    
+
     setLose() {
         this.dinoElem.src = "images/dino-lose.png"
     }
@@ -66,8 +65,8 @@ export default class Dino {
         this.yVelocity -= this.gravity * delta
     }
 
-    onJump(e) {
-        if (e.code !== "Space" || this.isJumping) return
+    #onJump = (e) => {
+        if(e.code !== "Space" || this.isJumping) return
         
         this.yVelocity = this.jumpSpeed
         this.isJumping = true
