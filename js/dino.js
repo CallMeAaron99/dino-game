@@ -42,6 +42,7 @@ export default class Dino {
             return
         }
 
+        // Update dino frame
         if (this.currentFrameTime >= this.frame_time) {
             this.dinoFrame = (this.dinoFrame + 1) % this.dino_frame_count
             this.dinoElem.src = `images/dino-run-${this.dinoFrame}.png`
@@ -55,7 +56,7 @@ export default class Dino {
 
         incrementCustomProperty(this.dinoElem, "--bottom", this.yVelocity * delta)
 
-        // Touch ground
+        // Hit the ground
         if (getCustomProperty(this.dinoElem, "--bottom") <= 0) {
             setCustomProperty(this.dinoElem, "--bottom", 0)
             this.isJumping = false

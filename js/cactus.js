@@ -10,20 +10,23 @@ export default class Cactus {
     }
 
     reset() {
-        this.nextCactusTime = this.min_interval
+        this.nextCactusTime = this.min_interval // Spawn cactus asap
         document.querySelectorAll("[data-cactus]").forEach(cactus => {
             cactus.remove()
         })
     }
 
     update(delta, speedScale) {
+        // Update cactus position
         document.querySelectorAll("[data-cactus]").forEach(cactus => {
             incrementCustomProperty(cactus, "--left", delta * speedScale * this.speed * -1)
+            // Remove cactuses that are out of screen
             if (getCustomProperty(cactus, "--left") <= -100) {
                 cactus.remove()
             }
         })
 
+        // Spawn cactus when time reaches 0
         if (this.nextCactusTime <= 0) {
             this.#create()
             this.nextCactusTime = randomNumberBetween(this.min_interval, this.max_interval) / speedScale
@@ -32,14 +35,19 @@ export default class Cactus {
     }
 
     rects() {
-        return [...document.querySelectorAll("[data-cactus]")].map(cactus => {
-            return cactus.getBoundingClientRect()
-        })
+        /*
+            rects structure:
+            [
+                {x: 0, y: 0, ...},
+                {x: 0, y: 0, ...}
+            ]
+        */
+        return [...document.querySelectorAll("[data-cactus]")].map(cactus => cactus.getBoundingClientRect())
     }
 
     #create() {
         const cactus = document.createElement("img")
-        cactus.dataset.cactus = true
+        cactus.dataset.cactus = ""
         cactus.src = "images/cactus.png"
         cactus.classList.add("cactus")
         setCustomProperty(cactus, "--left", 100)

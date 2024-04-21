@@ -7,14 +7,18 @@ export default class Ground {
     }
 
     reset() {
-        setCustomProperty(this.groundElems[0], "--left", 0)
-        setCustomProperty(this.groundElems[1], "--left", 300)
+        for (let i = 0; i < this.groundElems.length; i++) {
+            // Spawn grounds
+            setCustomProperty(this.groundElems[i], "--left", i * 300)
+        }
     }
 
     update(delta, speedScale) {
         this.groundElems.forEach(ground => {
+            // Update grounds position
             incrementCustomProperty(ground, "--left", delta * speedScale * this.speed * -1)
 
+            // Remove grounds that are out of screen
             if (getCustomProperty(ground, "--left") <= -300) {
                 incrementCustomProperty(ground, "--left", 600)
             }

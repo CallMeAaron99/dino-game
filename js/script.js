@@ -1,6 +1,7 @@
 import Cactus from './cactus.js'
 import Dino from './dino.js'
 import Ground from './ground.js'
+import { isCollision } from './util.js'
 
 const WORLD_WIDTH = 100
 const WORLD_HEIGHT = 30
@@ -27,6 +28,7 @@ window.addEventListener("resize", setPixelToWorldScale)
 document.addEventListener("keydown", handelStart, { once: true })
 
 function update(time) {
+    // Skip first loop
     if (lastTime == null) {
         lastTime = time
         window.requestAnimationFrame(update)
@@ -40,7 +42,7 @@ function update(time) {
     dino.update(delta, speedScale)
     cactus.update(delta, speedScale)
 
-    if (checkLost()) return handelLose()
+    if (isLost()) return handelLose()
 
     lastTime = time
     window.requestAnimationFrame(update)
@@ -48,24 +50,16 @@ function update(time) {
 
 function handelLose() {
     dino.setLose()
+    // Prevent instant start
     setTimeout(() => {
         document.addEventListener("keydown", handelStart, { once: true })
         startScreenElem.classList.remove("hide")
     }, 100)
 }
 
-function checkLost() {
+function isLost() {
     const dinoRect = dino.getRect()
     return cactus.rects().some(rect => isCollision(rect, dinoRect))
-}
-
-function isCollision(rect1, rect2) {
-    return (
-        rect1.left < rect2.right &&
-        rect1.top < rect2.bottom &&
-        rect1.right > rect2.left &&
-        rect1.bottom > rect2.top
-    )
 }
 
 function updateScore(delta) {
