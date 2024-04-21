@@ -54,6 +54,7 @@ export default class Dino {
     #handelJump(delta) {
         if (!this.isJumping) return
 
+        // Update dino position
         incrementCustomProperty(this.dinoElem, "--bottom", this.yVelocity * delta)
 
         // Hit the ground

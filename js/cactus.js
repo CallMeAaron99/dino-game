@@ -11,15 +11,17 @@ export default class Cactus {
 
     reset() {
         this.nextCactusTime = this.min_interval // Spawn cactus asap
+        // Clear cactus
         document.querySelectorAll("[data-cactus]").forEach(cactus => {
             cactus.remove()
         })
     }
 
     update(delta, speedScale) {
-        // Update cactus position
         document.querySelectorAll("[data-cactus]").forEach(cactus => {
+            // Update cactus position
             incrementCustomProperty(cactus, "--left", delta * speedScale * this.speed * -1)
+            
             // Remove cactuses that are out of screen
             if (getCustomProperty(cactus, "--left") <= -100) {
                 cactus.remove()
